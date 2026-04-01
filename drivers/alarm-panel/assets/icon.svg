@@ -1,8 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <path d="M50 5 L90 20 L90 55 Q90 80 50 95 Q10 80 10 55 L10 20 Z"
-        fill="#C8102E" stroke="none"/>
-  <path d="M50 18 L78 30 L78 54 Q78 72 50 83 Q22 72 22 54 L22 30 Z"
-        fill="#FFFFFF" stroke="none"/>
-  <path d="M42 48 L35 41 L30 46 L42 58 L70 30 L65 25 Z"
-        fill="#C8102E" stroke="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="960" height="960">
+  <!-- Fond transparent -->
+  <!-- Bouclier Verisure rouge centré sur canvas 960x960 -->
+  <path d="M480 80 L860 200 L860 520 Q860 760 480 880 Q100 760 100 520 L100 200 Z"
+        fill="#C8102E"/>
+  <!-- Reflet intérieur -->
+  <path d="M480 160 L780 260 L780 510 Q780 700 480 800 Q180 700 180 510 L180 260 Z"
+        fill="#FFFFFF" opacity="0.12"/>
+  <!-- Coche blanche -->
+  <polyline points="310,490 430,620 660,360"
+        stroke="#FFFFFF" stroke-width="72"
+        stroke-linecap="round" stroke-linejoin="round"
+        fill="none"/>
 </svg>
