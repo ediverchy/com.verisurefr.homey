@@ -1,0 +1,84 @@
+{
+  "app": {
+    "name": "Verisure",
+    "description": "Integrate your Verisure France alarm system with Homey"
+  },
+
+  "pair": {
+    "email": "Email address",
+    "email_placeholder": "your@email.com",
+    "password": "Password",
+    "continue": "Continue",
+    "mfa_title": "Verification code",
+    "mfa_subtitle": "A text message has been sent to your phone",
+    "mfa_hint": "Enter the 6-digit code you received",
+    "mfa_validate": "Validate",
+    "mfa_back": "← Start over",
+    "mfa_success": "Authentication successful!",
+    "loading": "Loading…",
+    "searching": "Searching for devices…",
+    "no_devices": "No devices found. Make sure your Verisure account is correctly set up.",
+    "select_devices": "Select the devices to add",
+    "connected": "Connected"
+  },
+
+  "device": {
+    "alarm_panel_name": "Verisure Alarm Panel",
+    "front_label": "Camera",
+    "contact_open": "Open",
+    "contact_closed": "Closed",
+    "armed": "Armed (away)",
+    "armed_home": "Armed (home)",
+    "disarmed": "Disarmed",
+    "motion_active": "Motion detected",
+    "motion_clear": "No motion"
+  },
+
+  "settings": {
+    "poll_interval_label": "Polling interval (minutes)",
+    "poll_interval_hint": "How often to query the Verisure cloud. Minimum 5 minutes recommended to avoid rate limiting.",
+    "session_connected": "Connected",
+    "session_disconnected": "Disconnected",
+    "last_poll": "Last update",
+    "sensor_count": "Paired sensors",
+    "account_email": "Email address",
+    "disconnect": "Disconnect",
+    "disconnect_title": "Disconnect account?",
+    "disconnect_body": "The Verisure session will be deleted. Sensors will no longer update until you reconnect the app.",
+    "disconnect_cancel": "Cancel",
+    "disconnect_confirm": "Disconnect",
+    "save": "Save",
+    "saved": "Saved ✓",
+    "alarm_armed": "Armed (away)",
+    "alarm_armed_home": "Armed (home)",
+    "alarm_disarmed": "Disarmed"
+  },
+
+  "error": {
+    "session_expired": "Session expired — please re-pair the app",
+    "no_sensors_found": "No contact sensors found on this Verisure account",
+    "no_cameras_found": "No PIR cameras (GuardVision / SmartCam) found on this Verisure account",
+    "no_installation_found": "No Verisure installation found for this account",
+    "capture_not_allowed": "Image capture is not enabled on this device",
+    "capture_forbidden": "Insufficient permissions to access camera images",
+    "login_failed": "Incorrect credentials or service unavailable",
+    "mfa_failed": "Incorrect or expired code. Please try again.",
+    "endpoint_error": "Unable to reach the Verisure France service"
+  },
+
+  "flow": {
+    "contact_opened": "A contact sensor opened",
+    "contact_closed": "A contact sensor closed",
+    "alarm_triggered": "Alarm was triggered",
+    "motion_detected": "Motion was detected",
+    "image_captured": "An image was captured",
+    "is_alarm_armed": "Alarm is armed",
+    "refresh_now": "Refresh Verisure sensors now",
+    "capture_image": "Take a photo now",
+    "token_area": "Area",
+    "token_device": "Device name",
+    "token_capture_time": "Capture time",
+    "token_state": "State",
+    "token_changed_via": "Changed via"
+  }
+}
