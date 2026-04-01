@@ -475,10 +475,10 @@
     }
   },
   "bugs": {
-    "url": "https://github.com/ediverchy/com.verisure.homey/issues"
+    "url": "https://github.com/ediverchy/com.verisurefr.homey/issues"
   },
-  "source": "https://github.com/ediverchy/com.verisurefr",
-  "homepage": "https://github.com/ediverchy/com.verisure.homey",
+  "source": "https://github.com/ediverchy/com.verisurefr.homey",
+  "homepage": "https://github.com/ediverchy/com.verisurefr.homey",
   "settings": [
     {
       "id": "poll_interval_min",
