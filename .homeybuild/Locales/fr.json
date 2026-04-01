@@ -1,0 +1,84 @@
+{
+  "app": {
+    "name": "Verisure",
+    "description": "Intégrez votre alarme Verisure France avec Homey"
+  },
+
+  "pair": {
+    "email": "Adresse email",
+    "email_placeholder": "votre@email.com",
+    "password": "Mot de passe",
+    "continue": "Continuer",
+    "mfa_title": "Code de vérification",
+    "mfa_subtitle": "Un SMS vient d'être envoyé à votre téléphone",
+    "mfa_hint": "Saisissez le code à 6 chiffres reçu par SMS",
+    "mfa_validate": "Valider",
+    "mfa_back": "← Recommencer",
+    "mfa_success": "Authentification réussie !",
+    "loading": "Chargement…",
+    "searching": "Recherche des appareils…",
+    "no_devices": "Aucun appareil trouvé. Vérifiez que votre compte Verisure est correctement configuré.",
+    "select_devices": "Sélectionnez les appareils à ajouter",
+    "connected": "Connecté"
+  },
+
+  "device": {
+    "alarm_panel_name": "Centrale d'alarme Verisure",
+    "front_label": "Caméra",
+    "contact_open": "Ouvert",
+    "contact_closed": "Fermé",
+    "armed": "Armée (totale)",
+    "armed_home": "Armée (partielle)",
+    "disarmed": "Désarmée",
+    "motion_active": "Mouvement détecté",
+    "motion_clear": "Aucun mouvement"
+  },
+
+  "settings": {
+    "poll_interval_label": "Intervalle de mise à jour (minutes)",
+    "poll_interval_hint": "Fréquence d'interrogation du cloud Verisure. 5 minutes minimum recommandé pour éviter le blocage.",
+    "session_connected": "Connecté",
+    "session_disconnected": "Non connecté",
+    "last_poll": "Dernière mise à jour",
+    "sensor_count": "Capteurs couplés",
+    "account_email": "Adresse email",
+    "disconnect": "Déconnecter",
+    "disconnect_title": "Déconnecter le compte ?",
+    "disconnect_body": "La session Verisure sera supprimée. Les capteurs ne seront plus mis à jour tant que vous ne reconnectez pas l'app.",
+    "disconnect_cancel": "Annuler",
+    "disconnect_confirm": "Déconnecter",
+    "save": "Enregistrer",
+    "saved": "Enregistré ✓",
+    "alarm_armed": "Armée (totale)",
+    "alarm_armed_home": "Armée (partielle)",
+    "alarm_disarmed": "Désarmée"
+  },
+
+  "error": {
+    "session_expired": "Session expirée — veuillez recoupler l'app",
+    "no_sensors_found": "Aucun capteur de contact trouvé sur ce compte Verisure",
+    "no_cameras_found": "Aucun PIR avec caméra (GuardVision / SmartCam) trouvé sur ce compte Verisure",
+    "no_installation_found": "Aucune installation Verisure trouvée pour ce compte",
+    "capture_not_allowed": "La capture d'image n'est pas activée sur cet appareil",
+    "capture_forbidden": "Droits insuffisants pour accéder aux images de la caméra",
+    "login_failed": "Identifiants incorrects ou service indisponible",
+    "mfa_failed": "Code incorrect ou expiré. Veuillez réessayer.",
+    "endpoint_error": "Impossible de joindre le service Verisure France"
+  },
+
+  "flow": {
+    "contact_opened": "Un capteur de contact s'est ouvert",
+    "contact_closed": "Un capteur de contact s'est fermé",
+    "alarm_triggered": "L'alarme a été déclenchée",
+    "motion_detected": "Un mouvement a été détecté",
+    "image_captured": "Une image a été capturée",
+    "is_alarm_armed": "L'alarme est armée",
+    "refresh_now": "Rafraîchir les capteurs Verisure maintenant",
+    "capture_image": "Prendre une photo maintenant",
+    "token_area": "Zone",
+    "token_device": "Nom du capteur",
+    "token_capture_time": "Heure de la prise",
+    "token_state": "État",
+    "token_changed_via": "Changé via"
+  }
+}

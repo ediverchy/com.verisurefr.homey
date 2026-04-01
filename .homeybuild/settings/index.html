@@ -1,0 +1,1637 @@
+<!DOCTYPE html><!-- v2026-03-28 14:14 -->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verisure -- Réglages</title>
+
+  <!-- Obligatoire SDK3 : doit être présent avant tout autre script -->
+  <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:     #C8102E;
+      --red-dim: #8a0b1f;
+      --ink:     #0f0f0f;
+      --ink-2:   #3a3a3a;
+      --ink-3:   #8a8a8a;
+      --surface: #f7f6f4;
+      --white:   #ffffff;
+      --border:  #e2e0db;
+      --green:   #0a6640;
+      --green-bg:#ecfdf3;
+      --amber:   #92400e;
+      --amber-bg:#fffbeb;
+      --radius:  10px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      background: var(--surface);
+      padding: 1.5rem 1.25rem 2.5rem;
+      -webkit-font-smoothing: antialiased;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .section {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .section-head {
+      padding: 0.9rem 1.1rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-icon {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .section-icon svg { width: 14px; height: 14px; }
+    .icon-red  { background: #fef2f4; }
+    .icon-red  svg { fill: var(--red); }
+    .icon-gray { background: #f1f0ec; }
+    .icon-gray svg { fill: var(--ink-2); }
+
+    .section-title { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .section-body  { padding: 0; }
+
+    .row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .row:last-child { border-bottom: none; }
+
+    .row-label { font-size: 13.5px; color: var(--ink); flex: 1; }
+    .row-hint  { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; line-height: 1.4; }
+    /* Toggle switch */
+    /* Fenêtre de logs */
+    .log-window { background: #0f0f0f; border-radius: 10px; padding: 12px 14px; font-family: 'Courier New', monospace; font-size: 11px; color: #e0e0e0; height: 260px; overflow-y: auto; overflow-x: hidden; white-space: pre-wrap; word-break: break-all; line-height: 1.6; }
+    /* Tableau ACT_V2 */
+    .actv2-table { width:100%; border-collapse:collapse; font-size:11px; }
+    .actv2-table th { padding:5px 8px; text-align:left; font-weight:600; font-size:10px; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-3); border-bottom:1px solid var(--border); background:var(--surface-2,#f5f5f5); }
+    .actv2-table td { padding:5px 8px; border-bottom:1px solid var(--border); vertical-align:middle; }
+    .actv2-table tr:last-child td { border-bottom:none; }
+    .actv2-table tr:hover td { background:var(--surface,#fafafa); }
+    .actv2-badge { display:inline-block; padding:1px 7px; border-radius:10px; font-size:10px; font-weight:600; }
+    .actv2-arm   { background:#fef3e2; color:#b45309; }
+    .actv2-darm  { background:#ecfdf5; color:#047857; }
+    .actv2-check { background:#eff6ff; color:#1d4ed8; }
+    .actv2-other { background:#f3f4f6; color:#374151; }
+    .log-window::-webkit-scrollbar { width: 5px; }
+    .log-window::-webkit-scrollbar-track { background: #1a1a1a; border-radius: 3px; }
+    .log-window::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+    .log-timestamp { color: #888; }
+    .log-ok  { color: #4caf50; }
+    .log-err { color: #f44336; }
+    .log-warn{ color: #ff9800; }
+    .log-info{ color: #64b5f6; }
+    .log-toolbar { display: flex; gap: 8px; margin-top: 8px; align-items: center; }
+    .log-toolbar .btn-sm { height: 30px; padding: 0 12px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; color: var(--ink-2); }
+    .log-toolbar .btn-sm:hover { border-color: var(--red); color: var(--red); }
+    .log-toolbar .log-status { font-size: 11px; color: var(--ink-3); margin-left: auto; }
+    .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--border); border-radius: 24px; transition: .3s; }
+    .toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px;
+      left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .3s; }
+    input:checked + .toggle-slider { background-color: var(--red); }
+    input:checked + .toggle-slider:before { transform: translateX(20px); }
+    .row-value { font-family: 'DM Sans', monospace; font-size: 13px;
+      color: var(--ink-2); text-align: right; flex-shrink: 0; }
+
+    .badge { display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; padding: 2px 9px; border-radius: 99px; font-weight: 500; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .badge-green { background: var(--green-bg); color: var(--green); }
+    .badge-green .badge-dot { background: var(--green); }
+    .badge-amber { background: var(--amber-bg); color: var(--amber); }
+    .badge-amber .badge-dot { background: #f59e0b; }
+    .badge-red   { background: #fff5f6; color: var(--red); }
+    .badge-red   .badge-dot { background: var(--red); }
+
+    .interval-wrap { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .interval-input {
+      width: 56px; height: 34px; text-align: center;
+      font-family: monospace; font-size: 14px; font-weight: 500;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--ink); outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .interval-input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(200,16,46,0.1); }
+    .interval-unit { font-size: 12px; color: var(--ink-3); }
+
+    .btn {
+      height: 34px; padding: 0 14px; border-radius: 8px;
+      font-family: inherit; font-size: 12.5px; font-weight: 500;
+      cursor: pointer; border: 1px solid var(--border);
+      background: var(--surface); color: var(--ink-2);
+      transition: background 0.15s; white-space: nowrap;
+    }
+    .btn:hover { background: var(--border); }
+    .btn-danger { border-color: #f5c0c8; background: #fff5f6; color: var(--red); }
+    .btn-danger:hover { background: #ffe8ec; }
+    .btn-primary { border-color: var(--red); background: var(--red); color: white; }
+    .btn-primary:hover { background: var(--red-dim); border-color: var(--red-dim); }
+
+    .save-feedback { font-size: 12px; color: var(--green); opacity: 0;
+      transition: opacity 0.3s; white-space: nowrap; }
+    .save-feedback.visible { opacity: 1; }
+
+    .page-header { display: flex; align-items: center; gap: 10px;
+      margin-bottom: 1.25rem; padding-top: 0.25rem; }
+    .page-logo { width: 36px; height: 36px; background: var(--red);
+      border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    .page-logo svg { width: 20px; height: 20px; fill: white; }
+    .page-title { font-size: 16px; font-weight: 500; letter-spacing: -0.01em; }
+    .page-sub   { font-size: 12px; color: var(--ink-3); }
+
+    /* Formulaire de login intégré */
+    .login-label { display: block; font-size: 11.5px; font-weight: 500; color: var(--ink-3);
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 6px; }
+    .login-input { width: 100%; height: 42px; padding: 0 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); font-family: inherit;
+      font-size: 14px; color: var(--ink); outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s; }
+    .login-input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(200,16,46,0.1); }
+    .login-error { font-size: 12.5px; color: var(--red); background: #fff5f6;
+      border: 1px solid #f5c0c8; border-radius: var(--radius); padding: 8px 12px; }
+    .btn-phone { width:100%; height:44px; background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--radius); font-family:inherit; font-size:14px; color:var(--ink);
+      cursor:pointer; transition:background 0.15s,border-color 0.15s; text-align:center; }
+    .btn-phone:hover { background:var(--border); border-color:var(--red); color:var(--red); }
+    .login-success { font-size: 12.5px; color: var(--green); background: var(--green-bg);
+      border: 1px solid #a7f0c4; border-radius: var(--radius); padding: 8px 12px; }
+    .btn-spinner { display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.35); border-top-color: white;
+      border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Confirm sheet -- utilise un conteneur inline (pas de position:fixed) */
+    .confirm-backdrop {
+      display: none;
+      background: rgba(0,0,0,0.45);
+      border-radius: 14px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .confirm-backdrop.visible { display: block; }
+    .confirm-sheet {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 1.25rem 1.25rem 1rem;
+    }
+    .confirm-title   { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+    .confirm-body    { font-size: 13px; color: var(--ink-3); line-height: 1.5; margin-bottom: 1rem; }
+    .confirm-actions { display: flex; gap: 8px; }
+    .confirm-actions .btn { flex: 1; height: 40px; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+  <div class="section" id="section-login">
+    <div class="section-head">
+      <div class="section-icon icon-red">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z"/></svg>
+      </div>
+      <span class="section-title">Connexion Verisure</span>
+    </div>
+    <div class="section-body">
+      <div class="row" style="flex-direction:column; align-items:stretch; gap:12px; padding:1rem 1.1rem;">
+
+        <!-- Étape 1 : Email + mot de passe -->
+        <div id="login-step-1">
+          <div>
+            <label class="login-label" for="login-email">Email du compte Verisure</label>
+            <input class="login-input" type="email" id="login-email" placeholder="votre@email.com"/>
+          </div>
+          <div style="margin-top:10px;">
+            <label class="login-label" for="login-password">Mot de passe</label>
+            <input class="login-input" type="password" id="login-password" placeholder="••••••••"/>
+          </div>
+          <button class="btn btn-primary" id="login-btn" onclick="doLogin()" style="height:42px;margin-top:12px;width:100%;">
+            Se connecter
+          </button>
+          <p id="login-err" style="font-size:12px;color:var(--red);margin-top:8px;display:none;"></p>
+        </div>
+
+        <!-- Étape 2 : Choix du téléphone OTP -->
+        <div id="login-step-2" style="display:none;">
+          <p style="font-size:13px;color:var(--ink-2);margin-bottom:10px;">Choisissez le numéro pour recevoir le code SMS :</p>
+          <div id="login-phones" style="display:flex;flex-direction:column;gap:8px;"></div>
+          <p id="login-phone-err" style="font-size:12px;color:var(--red);margin-top:8px;display:none;"></p>
+        </div>
+
+        <!-- Étape 3 : Saisie du code OTP -->
+        <div id="login-step-3" style="display:none;">
+          <p style="font-size:13px;color:var(--ink-2);margin-bottom:10px;">Entrez le code reçu par SMS :</p>
+          <div>
+            <label class="login-label" for="login-otp">Code OTP</label>
+            <input class="login-input" type="text" id="login-otp" placeholder="123456" maxlength="8"
+              style="letter-spacing:4px;font-size:20px;text-align:center;font-family:monospace;"/>
+          </div>
+          <button class="btn btn-primary" onclick="doVerifyOtp()" style="height:42px;margin-top:12px;width:100%;">
+            Valider le code
+          </button>
+          <p id="login-otp-err" style="font-size:12px;color:var(--red);margin-top:8px;display:none;"></p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation déconnexion -->
+  <div class="confirm-backdrop" id="confirm-backdrop">
+    <div class="confirm-sheet">
+      <div class="confirm-title">Déconnecter le compte ?</div>
+      <div class="confirm-body">
+        La session Verisure sera supprimée. Les capteurs ne seront plus mis à jour tant que vous ne reconnectez pas l'app.
+      </div>
+      <div class="confirm-actions">
+        <button class="btn" onclick="hideConfirm()">Annuler</button>
+        <button class="btn btn-danger" onclick="disconnect()">Déconnecter</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// -- SDK3 : onHomeyReady reçoit l'instance Homey ---------------------------
+
+// Variable globale pour Homey — accessible par toutes les fonctions helper
+var H = null;
+var _homeyReady = false;
+
+// Wrapper sécurisé autour de H.api — évite "Cannot read properties of null (reading 'uri')"
+function safeApi(method, path, bodyOrCb, cb) {
+  if (!H || !_homeyReady) {
+    var callback = typeof bodyOrCb === 'function' ? bodyOrCb : cb;
+    if (callback) callback(new Error('Homey non initialisé'), null);
+    return;
+  }
+  try {
+    if (typeof bodyOrCb === 'function') {
+      H.api(method, path, bodyOrCb);
+    } else {
+      H.api(method, path, bodyOrCb, cb);
+    }
+  } catch(e) {
+    console.error('safeApi erreur:', e);
+    var callback2 = typeof bodyOrCb === 'function' ? bodyOrCb : cb;
+    if (callback2) callback2(e, null);
+  }
+}
+
+function onHomeyReady(Homey) {
+  H = Homey; // rendre Homey accessible globalement
+
+  // Homey.ready() EN PREMIER — obligatoire SDK3
+  Homey.ready();
+  _homeyReady = true;
+
+  // -- Chargement des settings (après ready) --------------------------------
+
+  Homey.get('poll_interval_min', function(err, value) {
+    if (!err && value) document.getElementById('poll-interval').value = Math.max(30, parseInt(value) || 30);
+  });
+
+  Homey.get('verisure_email', function(err, email) {
+    document.getElementById('account-email').textContent = (!err && email) ? email : '--';
+  });
+
+  // Détection de connexion au chargement
+  Homey.get('verisure_auth_hash', function(err1, hash) {
+    Homey.get('verisure_cookies', function(err2, cookies) {
+      var connected = (!err1 && !!hash) || (!err2 && !!cookies);
+      setConnectedState(connected);
+      if (connected) {
+        H.api('GET', '/init-giid', function(err, r) {
+          if (!err && r && r.ok) {
+            var s = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v || '--'; };
+            s('info-owner',    r.owner);
+            s('info-address',  r.address);
+            s('info-numinst',  r.installId);
+            s('info-giid',     r.giid || r.installId);
+            s('info-panel',    r.panelType);
+            if (r.wifiConnected !== undefined)
+              s('info-wifi', r.wifiConnected ? '✅ Connecté' : '❌ Non connecté');
+            if (r.powerStatus) {
+              var pm = {'P':'🔌 Secteur','B':'🔋 Batterie','C':'🔋 Chargement'};
+              s('info-power', pm[r.powerStatus] || r.powerStatus);
+            }
+            if (r.keepAliveDay) s('info-keepalive', r.keepAliveDay + ' j');
+          }
+          H.get('verisure_auth_hash', function(e, hash) {
+            var el = document.getElementById('info-hash');
+            if (el) el.textContent = (!e && hash) ? hash.slice(0,20)+'...' : '--';
+          });
+          safeApi('GET', '/get-alarm-state', function(e, r) {
+            if (!e && r && r.state) setAlarmBadge(r.state); else resetAlarmBadge();
+          });
+          H.get('verisure_last_poll_ts', function(e, ts) {
+            var el = document.getElementById('last-poll');
+            if (!e && ts && el) el.textContent = formatRelative(parseInt(ts));
+          });
+          H.get('verisure_sensor_count', function(e, count) {
+            var el = document.getElementById('sensor-count');
+            if (!e && count != null && el) el.textContent = count + ' capteur(s)';
+          });
+          setTimeout(refreshDevicesTable, 500);
+          if (!_actv2Loaded) setTimeout(loadActV2, 1000);
+          setTimeout(populatePirSelect, 800);
+        });
+        document.getElementById('section-capture').style.display = 'block';
+      } else {
+        document.getElementById('section-capture').style.display = 'none';
+      }
+    });
+  });
+
+  Homey.get('verisure_last_poll_ts', function(err, ts) {
+    if (!err && ts) document.getElementById('last-poll').textContent = formatRelative(parseInt(ts));
+  });
+
+  // Infos conditionnées à la session active — utiliser auth_hash OU cookies
+  Homey.get('verisure_auth_hash', function(err0, hash) {
+    var connected = !!hash;
+    safeApi('GET', '/get-alarm-state', function(err2, r) {
+      if (connected && !err2 && r && r.state) setAlarmBadge(r.state);
+      else resetAlarmBadge();
+    });
+    Homey.get('verisure_sensor_count', function(err2, count) {
+      document.getElementById('sensor-count').textContent =
+        (connected && !err2 && count != null) ? count + ' capteur(s)' : '--';
+    });
+    Homey.get('verisure_owner', function(err2, v) {
+      document.getElementById('info-owner').textContent = (connected && !err2 && v) ? v : '--';
+    });
+    Homey.get('verisure_address', function(err2, v) {
+      document.getElementById('info-address').textContent = (connected && !err2 && v) ? v : '--';
+    });
+  });
+  // Afficher numinst/panel/giid/JWT uniquement si session active
+  Homey.get('verisure_auth_hash', function(err, hash) {
+    var connected = !!hash;
+    Homey.get('verisure_giid', function(err2, v) {
+      document.getElementById('info-giid').textContent = (connected && !err2 && v) ? v : '--';
+    });
+    Homey.get('verisure_numinst', function(err2, v) {
+      document.getElementById('info-numinst').textContent = (connected && !err2 && v) ? v : '--';
+    });
+    Homey.get('verisure_panel', function(err2, v) {
+      document.getElementById('info-panel').textContent = (connected && !err2 && v) ? v : '--';
+    });
+  });
+  // JWT hash uniquement si session active
+  Homey.get('verisure_cookies', function(err, cookies) {
+    var sessionActive = !err && !!cookies;
+    Homey.get('verisure_auth_hash', function(err2, v) {
+      document.getElementById('info-hash').textContent = (sessionActive && !err2 && v) ? v.slice(0,20)+'...' : '--';
+    });
+  });
+
+  // -- Sauvegarde intervalle ------------------------------------------------
+
+  // -- Toggle notifications de poll ----------------------------------------
+  window.savePollLog = function(enabled) {
+    Homey.set('poll_log_enabled', enabled, function(err) {
+      if (!err) flashSave();
+    });
+  };
+
+  // Lire l'état du toggle au chargement
+  Homey.get('poll_log_enabled', function(err, val) {
+    var el = document.getElementById('toggle-poll-log');
+    if (el) el.checked = (!err && val === true);
+  });
+
+  window.saveInterval = function() {
+    var raw = parseInt(document.getElementById('poll-interval').value, 10);
+    var val = Math.min(120, Math.max(30, isNaN(raw) ? 30 : raw));
+    document.getElementById('poll-interval').value = val;
+    Homey.set('poll_interval_min', val, function(err) {
+      if (!err) flashSave();
+    });
+  };
+
+  // -- Déconnexion ----------------------------------------------------------
+
+  // -- Init Giid -------------------------------------------------------------
+  window.saveCapabilities = function() {
+    var token = document.getElementById('capab-input').value.trim();
+    if (!token) { alert('Token vide'); return; }
+    Homey.set('verisure_capab_token', token, function(err) {
+      if (err) { alert('Erreur: ' + err); return; }
+      document.getElementById('capab-input').value = '';
+      alert('✅ Token x-capabilities enregistré !');
+    });
+  };
+
+  window.testEntry = function() {
+    var res = document.getElementById('init-giid-result');
+    res.style.display = 'block';
+    res.textContent = 'Test xSEntry en cours...';
+    H.api('GET', '/test-entry', function(err, result) {
+      res.innerHTML = err
+        ? '❌ ' + JSON.stringify(err)
+        : '<b>EventLog (' + (result.count || 0) + ' événements)</b><br><pre style="font-size:10px;overflow:auto;max-height:200px">' + JSON.stringify(result.events || result, null, 2) + '</pre>';
+    });
+  };
+
+  window.doTestDevices = function() {
+    var out = document.getElementById('init-giid-result');
+    if (out) { out.style.display = 'block'; out.textContent = 'Récupération des devices...'; }
+    if (_autoRefreshTimer) { clearInterval(_autoRefreshTimer); _autoRefreshTimer = null; }
+    safeApi('GET', '/test-devices', function(err, result) {
+      var resume = function() {
+        setTimeout(function() { if (!_autoRefreshTimer) _autoRefreshTimer = setInterval(refreshLogs, 5000); }, 30000);
+      };
+      if (err) {
+        if (out) out.textContent = 'Erreur: ' + JSON.stringify(err);
+        resume(); return;
+      }
+      var lines = ['=== DEVICES VERISURE ==='];
+      if (result.error) {
+        lines.push('❌ ' + result.error);
+      } else {
+        lines.push('numinst: ' + result.numinst + ' | total: ' + result.count + ' device(s)');
+        if ((result.alarm||[]).length) {
+          lines.push('--- Centrale CENT (' + result.alarm.length + ') ---');
+          result.alarm.forEach(function(d) { lines.push('  🔒 code=' + d.code + ' name=' + d.name); });
+        }
+        if ((result.pir||[]).length) {
+          lines.push('--- PIR / Caméra XR (' + result.pir.length + ') ---');
+          result.pir.forEach(function(d) { lines.push('  📷 code=' + d.code + ' name=' + d.name); });
+        }
+        if ((result.contacts||[]).length) {
+          lines.push('--- Contacts MG (' + result.contacts.length + ') ---');
+          result.contacts.forEach(function(d) { lines.push('  🚪 code=' + d.code + ' name=' + d.name); });
+        }
+      }
+      lines.push('=== FIN ===');
+      lines.forEach(function(l) { _logLines.push(l); });
+      var logEl = document.getElementById('log-window');
+      if (logEl) {
+        logEl.innerHTML += '\n' + lines.map(function(l) {
+          return /🔒|📷|🚪|numinst/.test(l) ? '<span class="log-ok">' + l + '</span>'
+               : l.startsWith('❌') ? '<span class="log-err">' + l + '</span>'
+               : '<span class="log-info">' + l + '</span>';
+        }).join('\n');
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+      if (out) out.textContent = result.error ? 'Erreur' : result.count + ' devices trouvés';
+      resume();
+    });
+  };
+
+  window.doTestCapabilities = function() {
+    var res = document.getElementById('test-alarm-result');
+    res.style.display = 'block';
+    res.textContent = 'Test capabilities en cours...';
+    Homey.api('GET', '/test-capabilities', function(err, result) {
+      if (err) { res.textContent = 'Erreur: ' + JSON.stringify(err); return; }
+      res.textContent = JSON.stringify(result, null, 2);
+    });
+  };
+
+  window.doTestStatus = function() {
+    var res = document.getElementById('test-alarm-result');
+    res.style.display = 'block';
+    res.textContent = 'Test xSStatus en cours...';
+    Homey.api('GET', '/test-status', function(err, result) {
+      if (err) { res.textContent = 'Erreur: ' + String(err); return; }
+      try {
+        var s = result && result.raw && result.raw.data && result.raw.data.xSStatus;
+        res.textContent = JSON.stringify(s || result);
+      } catch(e) { res.textContent = 'Erreur parse: ' + e.message; }
+    });
+  };
+
+    window.doTestAlarm = function() {
+    var res = document.getElementById('test-alarm-result');
+    res.style.display = 'block';
+    res.textContent = 'Test en cours (~15s)...';
+    Homey.api('GET', '/test-alarm', function(err, result) {
+      if (err) { res.textContent = 'Erreur: ' + JSON.stringify(err); return; }
+      if (result.ok) {
+        var s = result.checkAlarmStatus && result.checkAlarmStatus.data && result.checkAlarmStatus.data.xSCheckAlarmStatus ? result.checkAlarmStatus.data.xSCheckAlarmStatus : {};
+        res.innerHTML = '✅ <b>protomResponse: ' + (s.protomResponse || '?') + '</b><br>'
+          + 'status: ' + (s.status || '?') + '<br>'
+          + 'msg: ' + (s.msg || '?') + '<br>'
+          + '<br>Logs:<br>' + (result.logs || []).join('<br>');
+      } else {
+        res.innerHTML = '❌ ' + JSON.stringify(result).replace(/,/g, ',<br>');
+      }
+    });
+  };
+
+  // Fonction centrale : appelle /init-giid et met à jour tous les champs
+  // silent=true : pas de message dans la zone résultat (appel automatique)
+  function autoResolveInstallation(silent) {
+    if (!H) return;
+    var res = document.getElementById('init-giid-result');
+    if (!silent) {
+      res.style.display = 'block';
+      res.textContent = 'Résolution en cours...';
+    }
+    safeApi('GET', '/init-giid', function(err, result) {
+      if (err) {
+        if (!silent) res.textContent = 'Erreur API: ' + JSON.stringify(err);
+        return;
+      }
+      if (!result) {
+        if (!silent) res.textContent = 'Pas de réponse';
+        return;
+      }
+      if (result.ok && result.giid) {
+        if (!silent) {
+          res.innerHTML = '✅ <b>' + (result.alias || '') + '</b><br>'
+            + (result.owner ? '<b>Titulaire :</b> ' + result.owner + '<br>' : '')
+            + (result.address ? '<b>Adresse :</b> ' + result.address + '<br>' : '')
+            + '<b>N° install :</b> ' + (result.installId || '--') + '<br>'
+            + '<b>Panel :</b> ' + (result.panelType || '--');
+        }
+        document.getElementById('info-giid').textContent    = result.giid || result.installId || '--';
+        document.getElementById('info-numinst').textContent = result.installId || '--';
+        document.getElementById('info-panel').textContent      = result.panelType || '--';
+        // Champs enrichis xSStatus
+        if (result.wifiConnected !== undefined) {
+          document.getElementById('info-wifi').textContent     = result.wifiConnected ? '✅ Connecté' : '❌ Non connecté';
+        }
+        if (result.powerStatus !== undefined) {
+          var pwrMap = { 'P': '🔌 Secteur', 'B': '🔋 Batterie', 'C': '🔋 Chargement' };
+          document.getElementById('info-power').textContent    = pwrMap[result.powerStatus] || result.powerStatus || '--';
+        }
+        if (result.keepAliveDay !== undefined && result.keepAliveDay !== null) {
+          document.getElementById('info-keepalive').textContent = result.keepAliveDay + ' j';
+        }
+        if (result.owner)   document.getElementById('info-owner').textContent   = result.owner;
+        if (result.address) document.getElementById('info-address').textContent = result.address;
+      } else {
+        if (!silent) res.innerHTML = '<b>❌ Résultat :</b><br>' + JSON.stringify(result).replace(/,/g, ',<br>');
+      }
+    });
+  }
+
+  window.doInitGiid = function() {
+    autoResolveInstallation(false);
+  };
+
+  // -- Login MFA ------------------------------------------------------------
+
+  // Étape 1 : email + mot de passe
+  window.doLogin = function() {
+    var email    = document.getElementById('login-email').value.trim();
+    var password = document.getElementById('login-password').value;
+    var err      = document.getElementById('login-err');
+    var btn      = document.getElementById('login-btn');
+    err.style.display = 'none';
+    if (!email || !password) { err.textContent = 'Email et mot de passe requis.'; err.style.display = 'block'; return; }
+    btn.disabled = true; btn.textContent = 'Connexion...';
+    // Utiliser /session/login (flow MFA officiel)
+    H.api('POST', '/session/login', { email: email, password: password }, function(apiErr, result) {
+      btn.disabled = false; btn.textContent = 'Se connecter';
+      if (apiErr) {
+        err.textContent = (apiErr && apiErr.message) ? apiErr.message : 'Erreur réseau.';
+        err.style.display = 'block'; return;
+      }
+      if (!result || !result.ok) {
+        err.textContent = (result && result.error) ? result.error : 'Erreur inconnue.';
+        err.style.display = 'block'; return;
+      }
+      if (result.phones && result.phones.length > 0) {
+        // Afficher les boutons téléphone pour choisir où recevoir le SMS
+        var phonesDiv = document.getElementById('login-phones');
+        phonesDiv.innerHTML = '';
+        result.phones.forEach(function(p, i) {
+          var btn2 = document.createElement('button');
+          btn2.className = 'btn';
+          btn2.style.cssText = 'width:100%;height:40px;font-size:13px;margin-top:6px;';
+          btn2.textContent = '📱 ' + (p.phone || 'Téléphone ' + (i+1));
+          (function(idx) {
+            btn2.onclick = function() { doSendOtp(idx); };
+          })(i);
+          phonesDiv.appendChild(btn2);
+        });
+        document.getElementById('login-step-1').style.display = 'none';
+        document.getElementById('login-step-2').style.display = 'block';
+      } else {
+        err.textContent = 'Aucun téléphone MFA disponible.';
+        err.style.display = 'block';
+      }
+    });
+  };
+
+  // Étape 2 : envoi SMS
+  window.doSendOtp = function(phoneIndex) {
+    var err = document.getElementById('login-phone-err');
+    err.style.display = 'none';
+    H.api('POST', '/session/request-otp', { phoneIndex: phoneIndex }, function(apiErr, result) {
+      if (apiErr || !result || !result.ok) {
+        err.textContent = (apiErr && apiErr.message) || (result && result.error) || 'Erreur envoi SMS.';
+        err.style.display = 'block'; return;
+      }
+      document.getElementById('login-step-2').style.display = 'none';
+      document.getElementById('login-step-3').style.display = 'block';
+    });
+  };
+
+  // Étape 3 : validation OTP
+  window.doVerifyOtp = function() {
+    var otp = document.getElementById('login-otp').value.trim();
+    var err = document.getElementById('login-otp-err');
+    err.style.display = 'none';
+    if (!otp) { err.textContent = 'Code requis.'; err.style.display = 'block'; return; }
+    H.api('POST', '/session/mfa', { code: otp }, function(apiErr, result) {
+      if (apiErr || !result) {
+        err.textContent = (apiErr && apiErr.message) || 'Erreur réseau.';
+        err.style.display = 'block'; return;
+      }
+      if (result.ok) {
+        // Rechargement complet de la page — garantit que le cache H.get()
+        // est réinitialisé avec les settings fraîchement écrits après MFA
+        window.location.reload();
+      } else {
+        err.textContent = result.reason || 'Code incorrect.';
+        err.style.display = 'block';
+      }
+    });
+  };
+
+  // -- Déconnexion ----------------------------------------------------------
+  window.disconnect = function() {
+    hideConfirm();
+    // Appel api.js → POST /session/clear
+    H.api('POST', '/session/clear', {}, function() {});
+    // Remise à zéro de tous les champs sensibles
+    document.getElementById('account-email').textContent   = '--';
+    document.getElementById('info-numinst').textContent    = '--';
+    document.getElementById('info-giid').textContent       = '--';
+    document.getElementById('info-panel').textContent      = '--';
+    var jwtEl = document.getElementById('info-jwt');
+    if (jwtEl) jwtEl.textContent = '--';
+    setConnectedState(false);
+  };
+
+
+  // -- Journal de l'application -------------------------------------------
+
+  var _logLines = [];
+  var _autoRefreshTimer = null;
+
+  function colorize(line) {
+    // Coloration syntaxique basique
+    var t = line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    // Timestamp HH:MM:SS en début de ligne
+    t = t.replace(/^(\d{2}:\d{2}:\d{2})/, '<span class="log-timestamp">$1</span>');
+    // Mots-clés colorés
+    if (/✅|OK|réussi|succès|rafraîchi/i.test(t))  t = '<span class="log-ok">'  + t + '</span>';
+    else if (/❌|erreur|error|expir|expir|failed|reconnexion/i.test(t)) t = '<span class="log-err">'  + t + '</span>';
+    else if (/⚠️|warn|avertissement|absent|null/i.test(t)) t = '<span class="log-warn">' + t + '</span>';
+    else if (/Poll|poll|refresh|token|session|giid/i.test(t)) t = '<span class="log-info">'  + t + '</span>';
+    return t;
+  }
+
+  function renderLogs(text) {
+    var lines = (text || '').split('\n').filter(function(l) { return l.trim(); });
+    _logLines = lines;
+    var el = document.getElementById('log-window');
+    if (!el) return;
+    el.innerHTML = lines.map(colorize).join('\n');
+    // Auto-scroll vers le bas
+    var autoScroll = document.getElementById('toggle-autoscroll');
+    if (!autoScroll || autoScroll.checked) {
+      el.scrollTop = el.scrollHeight;
+    }
+    var ts = new Date().toLocaleTimeString();
+    var lsu = document.getElementById('log-last-update');
+    if (lsu) lsu.textContent = 'Mis à jour ' + ts;
+  }
+
+  // -- Test ACT_V2 (ancienne API REST XML Verisure) -------------------------
+
+  window.testRequestImage = function() {
+    // Trouver les PIR XR depuis la dernière liste devices
+    var deviceCode = prompt(
+      'Code du PIR caméra à solliciter ?\n' +
+      'XR_9=salon, XR_10=couloir, XR_11=garage, XR_12=hangar\n' +
+      '(entrez le code numérique, ex: 10)',
+      '10'
+    );
+    if (!deviceCode) return;
+    deviceCode = parseInt(deviceCode);
+    if (isNaN(deviceCode)) { appendLog('❌ Code invalide'); return; }
+
+    appendLog('📸 Demande image PIR code ' + deviceCode + ' — en attente (~30s)...');
+    H.api('POST', '/request-image', { device: deviceCode }, function(err, result) {
+      if (err || (result && result.error)) {
+        appendLog('❌ Demande image : ' + ((err && err.message) || (result && result.error)));
+        if (result && result.raw) appendLog('   Raw: ' + JSON.stringify(result.raw));
+        return;
+      }
+      appendLog('✅ Demande image envoyée — referenceId: ' + result.referenceId);
+      if (result.statusResult) {
+        appendLog('   Statut final: ' + JSON.stringify(result.statusResult));
+      }
+    });
+  };
+
+  window.testRequestImage = function() {
+    // Trouver les cameras XR dans le tableau devices
+    var devices = [];
+    var rows = document.querySelectorAll('#devices-table-body tr');
+    rows.forEach(function(row) {
+      var cells = row.querySelectorAll('td');
+      if (cells.length >= 3 && cells[2] && cells[2].textContent.trim() === '📷') {
+        var code = parseInt(cells[0].textContent.trim());
+        if (!isNaN(code)) devices.push({ code: code, name: (cells[1] && cells[1].textContent.trim()) || 'XR_' + code });
+      }
+    });
+
+    if (!devices.length) {
+      appendLog('❌ Aucune camera PIR trouvée dans le tableau. Cliquez d\'abord sur "Afficher les devices".');
+      return;
+    }
+
+    // Proposer via prompt si plusieurs cameras
+    var target = devices[0];
+    if (devices.length > 1) {
+      var list = devices.map(function(d, i) { return i + ': ' + d.name + ' (code=' + d.code + ')'; }).join('\n');
+      var idx = parseInt(prompt('Choisir la camera (0-' + (devices.length-1) + ') :\n' + list) || '0');
+      target = devices[isNaN(idx) ? 0 : Math.min(idx, devices.length-1)];
+    }
+
+    appendLog('📷 Demande image — camera: ' + target.name + ' (code=' + target.code + ')...');
+    appendLog('   ⏳ Polling statut en cours (jusqu\'à 20s)...');
+
+    H.api('POST', '/request-image', { device: target.code }, function(err, result) {
+      if (err || (result && result.error)) {
+        appendLog('❌ requestImage : ' + ((err && err.message) || (result && result.error)));
+        if (result && result.raw) appendLog('   raw: ' + JSON.stringify(result.raw));
+        return;
+      }
+      appendLog('✅ Image demandée — referenceId: ' + result.referenceId);
+      if (result.status) appendLog('   Statut final: ' + JSON.stringify(result.status));
+      if (result.thumbnail) appendLog('   Thumbnail: ' + JSON.stringify(result.thumbnail));
+      if (result.imgPreview) appendLog('   img (début): ' + result.imgPreview);
+    });
+  };
+
+  // -- Demande d'image PIR ------------------------------------------------
+
+  window.requestImageFromCamera = function() {
+    var code = document.getElementById('camera-code-input');
+    var deviceCode = code ? parseInt(code.value) : null;
+    if (!deviceCode || isNaN(deviceCode)) {
+      appendLog('❌ Saisissez un code de caméra valide (ex: 9, 10, 11, 12)');
+      return;
+    }
+    appendLog('📷 Demande image caméra code=' + deviceCode + '...');
+    H.api('POST', '/request-image', { deviceCode: deviceCode }, function(err, result) {
+      if (err || (result && result.error)) {
+        appendLog('❌ Erreur : ' + ((err && err.message) || (result && result.error)));
+        return;
+      }
+      appendLog('✅ Demande envoyée — referenceId: ' + (result.referenceId || '?'));
+      if (result.statusResult) {
+        appendLog('   Statut: ' + result.statusResult.res + ' — ' + (result.statusResult.msg || ''));
+      }
+      appendLog('   ' + (result.note || ''));
+    });
+  };
+
+  // -- Capture d'image PIR ------------------------------------------------
+
+  function populatePirSelect() {
+    var sel = document.getElementById('capture-device');
+    if (!sel) return;
+    safeApi('GET', '/test-devices', function(err, result) {
+      if (err || !result || !result.pir) return;
+      sel.innerHTML = '<option value="">— Choisir un device PIR —</option>';
+      (result.pir || []).forEach(function(d) {
+        var opt = document.createElement('option');
+        opt.value = d.code;
+        opt.textContent = (d.name || d.code) + ' (code ' + d.code + ')';
+        sel.appendChild(opt);
+      });
+    });
+  }
+
+  window.doCaptureImage = function() {
+    var sel     = document.getElementById('capture-device');
+    var status  = document.getElementById('capture-status');
+    var imgWrap = document.getElementById('capture-image-wrap');
+    var img     = document.getElementById('capture-image');
+    var imgTs   = document.getElementById('capture-image-ts');
+    if (!sel || !sel.value) {
+      status.textContent = '⚠️ Sélectionnez un device PIR.';
+      status.style.display = 'block'; return;
+    }
+    var code = parseInt(sel.value, 10);
+    status.textContent = '📷 Capture en cours… (jusqu\'à 60s)';
+    status.style.display = 'block';
+    imgWrap.style.display = 'none';
+    appendLog('📷 Demande image PIR — device code ' + code + '...');
+    H.api('POST', '/capture-image', { deviceCode: code }, function(err, result) {
+      if (err || (result && result.error)) {
+        var msg = (err && err.message) || (result && result.error) || 'Erreur';
+        status.textContent = '❌ ' + msg;
+        appendLog('❌ Capture image : ' + msg);
+        return;
+      }
+      appendLog('✅ Image reçue — referenceId: ' + (result.referenceId || '?'));
+      status.textContent = '✅ Image reçue !';
+      if (result.img) {
+        var src = result.img.startsWith('http') ? result.img : 'data:image/jpeg;base64,' + result.img;
+        img.src = src;
+        imgWrap.style.display = 'block';
+        imgTs.textContent = 'Capturé le ' + new Date().toLocaleString('fr-FR');
+      } else {
+        status.textContent += ' (miniature non disponible — res=' + result.res + ')';
+        appendLog('   ⚠️ Pas de miniature — res=' + result.res + ' msg=' + result.msg);
+      }
+    });
+  };
+
+  // -- Journal ACT_V2 -------------------------------------------------------
+
+  var _actv2Loaded = false;
+
+  window.loadActV2 = function loadActV2() {
+    if (!H) { appendLog('❌ ACT_V2 : Homey non initialisé'); return; }
+    var btn = document.getElementById('actv2-refresh-btn');
+    var ts  = document.getElementById('actv2-ts');
+    var tbody = document.getElementById('actv2-body');
+    if (!tbody) return;
+
+    if (btn) btn.disabled = true;
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--ink-4);font-style:italic;padding:8px;">Chargement…</td></tr>';
+
+    safeApi('GET', '/test-act-v2', function(err, result) {
+      if (btn) btn.disabled = false;
+
+      if (err || (result && result.error)) {
+        var msg = (err && err.message) || (result && result.error) || 'Erreur';
+        tbody.innerHTML = '<tr><td colspan="4" style="color:#c0392b;font-style:italic;padding:8px;">' + msg + '</td></tr>';
+        return;
+      }
+
+      var reg = result.reg || [];
+      if (!reg.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="color:var(--ink-4);font-style:italic;padding:8px;">Aucun événement</td></tr>';
+        return;
+      }
+
+      // Types d'événements
+      var typeMap = {
+        1:  { label: 'Désactivation',            cls: 'actv2-darm',  icon: '🔓' },
+        2:  { label: 'Armé total',               cls: 'actv2-arm',   icon: '🔒' },
+        3:  { label: 'Armé nuit',                cls: 'actv2-arm',   icon: '🔒' },
+        4:  { label: 'Armé jour',                cls: 'actv2-arm',   icon: '🔒' },
+        5:  { label: 'Armé extérieur',           cls: 'actv2-arm',   icon: '🔒' },
+        27: { label: 'Consultation d\'état',    cls: 'actv2-check', icon: '👁️' },
+        51: { label: 'Ouverture capteur',        cls: 'actv2-other', icon: '🚪' },
+        52: { label: 'Fermeture capteur',        cls: 'actv2-other', icon: '🚪' },
+        53: { label: 'Détection mouvement',      cls: 'actv2-other', icon: '📷' },
+      };
+
+      var interfaceMap = { 'TI': 'Badge/TC', 'WEB': 'Web', 'APP': 'App' };
+
+      var rows = '';
+      reg.forEach(function(ev) {
+        var t   = typeMap[ev.type] || { label: ev.alias || ('Type ' + ev.type), cls: 'actv2-other', icon: '•' };
+        var dt  = ev.time ? ev.time.replace('T', ' ').slice(0, 16) : '?';
+        var who = ev.myVerisureUser || '';
+        var dev = ev.deviceName ? '<br><span style="font-size:10px;color:var(--ink-4);">' + ev.deviceName + '</span>' : '';
+        var iface = ev.interface
+          ? (interfaceMap[ev.interface] || ev.interface)
+          : (ev.source || '');
+
+        rows += '<tr>'
+          + '<td style="font-family:monospace;font-size:10.5px;white-space:nowrap;">' + dt + '</td>'
+          + '<td><span class="actv2-badge ' + t.cls + '">' + t.icon + ' ' + t.label + '</span>' + dev + '</td>'
+          + '<td style="font-size:10.5px;color:var(--ink-2);">' + who + '</td>'
+          + '<td style="font-size:10px;color:var(--ink-4);">' + iface + '</td>'
+          + '</tr>';
+      });
+
+      tbody.innerHTML = rows || '<tr><td colspan="4" style="color:var(--ink-4);font-style:italic;padding:8px;">Aucun événement visible</td></tr>';
+
+      // Timestamp
+      if (ts) {
+        var now = new Date();
+        ts.textContent = 'Mis à jour ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+      }
+      _actv2Loaded = true;
+    });
+  }
+
+  window.testExtra = function(type) {
+    var labels = {
+      cameras: '📷 Caméras', keys: '🔑 Clés/badges',
+      scheduler: '⏰ Scheduler', incidences: '🚨 Incidents', services: '⚙️ Services'
+    };
+    appendLog('🔍 Test ' + (labels[type] || type) + '...');
+    H.api('GET', '/test-' + type, function(err, result) {
+      if (err || (result && result.error)) {
+        appendLog('❌ ' + (labels[type] || type) + ' : ' + ((err && err.message) || (result && result.error)));
+        return;
+      }
+      appendLog('✅ ' + (labels[type] || type) + ' :');
+      appendLog(JSON.stringify(result, null, 2).split('\n').slice(0, 80).join('\n'));
+    });
+  };
+
+  window.testActV2 = function() {
+    appendLog('🔍 ACT_V2 — appel journal d\'activité GraphQL...');
+    safeApi('GET', '/test-act-v2', function(err, result) {
+      if (err) {
+        appendLog('❌ ACT_V2 erreur : ' + (err.message || JSON.stringify(err)));
+        return;
+      }
+      if (result.error) {
+        appendLog('❌ ACT_V2 : ' + result.error);
+        return;
+      }
+      var reg = result.reg || [];
+      appendLog('✅ ACT_V2 — ' + reg.length + ' événement(s) reçu(s)');
+      appendLog('─────────────────────────────────────');
+
+      // Types connus
+      var typeIcons = {
+        1: '🔓', 2: '🔒', 3: '🔒', 4: '🔒', 5: '🔒',
+        27: '👁️', 51: '🚪', 52: '🚪', 53: '📷'
+      };
+
+      reg.forEach(function(ev) {
+        var icon  = typeIcons[ev.type] || '•';
+        var dt    = ev.time || '?';
+        var who   = ev.myVerisureUser ? ' [' + ev.myVerisureUser + ']' : '';
+        var dev   = ev.deviceName ? ' — ' + ev.deviceName : (ev.device ? ' — ' + ev.device : '');
+        var iface = ev.interface ? ' (' + ev.interface + ')' : (ev.source ? ' (' + ev.source + ')' : '');
+        appendLog(icon + ' ' + dt + ' ' + (ev.alias || ev.type) + who + dev + iface);
+      });
+
+      appendLog('─────────────────────────────────────');
+    });
+  };
+
+  // -- Tableau des capteurs couplés ----------------------------------------
+
+  function refreshDevicesTable() {
+    safeApi('GET', '/test-devices', function(err, result) {
+      var tbody = document.getElementById('devices-table-body');
+      var ts    = document.getElementById('devices-table-ts');
+      if (!tbody) return;
+
+      if (err || !result || result.error) {
+        tbody.innerHTML = '<tr><td colspan="5" style="padding:5px 6px;color:#c0392b;font-style:italic;">'
+          + (result && result.error ? result.error : 'Erreur') + '</td></tr>';
+        return;
+      }
+
+      // Ordre : CENT, XR, MG
+      var all = (result.alarm || []).concat(result.pir || []).concat(result.contacts || []);
+
+      if (!all.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="padding:5px 6px;color:var(--ink-4);font-style:italic;">Aucun device</td></tr>';
+        return;
+      }
+
+      var rows = '';
+      all.forEach(function(d, i) {
+        var bg   = i % 2 === 0 ? '' : 'background:var(--surface,#fafafa);';
+        var type = d.type === 'CENT' ? '🔒' : d.type === 'XR' ? '📷' : '🚪';
+
+        var state;
+        if (d.type === 'XR') {
+          state = d.state === true
+            ? '<span style="color:#e67e22;font-weight:600;">Mvt</span>'
+            : '<span style="color:#27ae60;">—</span>';
+        } else if (d.type === 'MG') {
+          state = d.state === 'OPEN'
+            ? '<span style="color:#e74c3c;font-weight:600;">Ouvert</span>'
+            : '<span style="color:#27ae60;">Fermé</span>';
+        } else {
+          var s = (d.state || '').toUpperCase();
+          state = s === 'DISARMED' ? '<span style="color:#27ae60;">Désarmé</span>'
+                : s && s !== 'UNKNOWN' ? '<span style="color:#e67e22;font-weight:600;">Armé</span>'
+                : '<span style="color:var(--ink-4);">—</span>';
+        }
+
+        var count = (d.count !== undefined && d.count !== null && d.type !== 'CENT') ? d.count : '';
+
+        rows += '<tr style="' + bg + '">'
+          + '<td style="padding:3px 6px;font-family:monospace;white-space:nowrap;">' + (d.code || '?') + '</td>'
+          + '<td style="padding:3px 6px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (d.name || '?') + '</td>'
+          + '<td style="padding:3px 6px;text-align:center;">' + type + '</td>'
+          + '<td style="padding:3px 6px;text-align:center;">' + state + '</td>'
+          + '<td style="padding:3px 6px;text-align:right;color:var(--ink-3);">' + count + '</td>'
+          + '</tr>';
+      });
+
+      tbody.innerHTML = rows;
+      if (ts) {
+        var now = new Date();
+        ts.textContent = 'Mis à jour ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+      }
+    });
+  }
+
+  var _devicesRefreshCount = 0;
+  var _actv2RefreshCount   = 0;
+  window.refreshLogs = function() {
+    _devicesRefreshCount++;
+    if (_devicesRefreshCount >= 2) { _devicesRefreshCount = 0; refreshDevicesTable(); }
+    _actv2RefreshCount++;
+    if (_actv2RefreshCount >= 120) { _actv2RefreshCount = 0; loadActV2(); }
+    Homey.api('GET', '/logs', function(err, result) {
+      if (!err && result) renderLogs(result.logs || '');
+    });
+  };
+
+  window.copyLogs = function(btnEl) {
+    var text = _logLines.join('\n');
+    if (!text) { text = document.getElementById('log-window').innerText || ''; }
+
+    var btn = btnEl || document.querySelector('[onclick="copyLogs()"]');
+    var orig = btn ? btn.textContent : '📋 Copier';
+
+    var showFeedback = function(msg) {
+      if (btn) {
+        btn.textContent = msg;
+        setTimeout(function() { btn.textContent = orig; }, 2000);
+      }
+    };
+
+    // Méthode 1 : textarea + execCommand (fonctionne dans les iframes Homey)
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (ok) { showFeedback('✓ Copié !'); return; }
+    } catch(e) {}
+
+    // Méthode 2 : clipboard API moderne
+    if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text)
+        .then(function() { showFeedback('✓ Copié !'); })
+        .catch(function() { showFeedback('❌ Échec'); });
+      return;
+    }
+
+    // Méthode 3 : afficher dans une boîte de dialogue pour copie manuelle
+    showFeedback('📋 Sélectionnez ci-dessous');
+    var el = document.getElementById('log-window');
+    if (el) {
+      el.focus();
+      var range = document.createRange();
+      range.selectNode(el);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    }
+  };
+
+  window.clearLogDisplay = function() {
+    var el = document.getElementById('log-window');
+    if (el) { el.innerHTML = '<span style="color:#555">— Vue effacée (logs serveur non modifiés) —</span>'; }
+    _logLines = [];
+  };
+
+  // Démarrer les timers
+  refreshLogs();
+  _autoRefreshTimer = setInterval(refreshLogs, 5000);
+
+  // Polling de statut toutes les 3s — détecte les changements de connexion
+  // et met à jour les champs sans recharger la page
+  var _wasConnected = null;
+  var _statusPollCount = 0;
+
+  function _pollStatus() {
+    if (!H) return; // Homey pas encore prêt
+    H.get('verisure_auth_hash', function(err, hash) {
+      var connected = !err && !!hash;
+      _statusPollCount++;
+
+      // Changement de statut détecté par _pollStatus → recharger
+      if (_wasConnected !== null && _wasConnected !== connected) {
+        setConnectedState(connected);
+        if (connected) {
+          // Reconnexion détectée : recharger tout via /init-giid après 1s
+          setTimeout(function() {
+            safeApi('GET', '/init-giid', function(err, r) {
+              if (!err && r && r.ok) {
+                var s = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v || '--'; };
+                s('info-owner',   r.owner);
+                s('info-address', r.address);
+                s('info-numinst', r.installId);
+                s('info-giid',    r.giid || r.installId);
+                s('info-panel',   r.panelType);
+                if (r.wifiConnected !== undefined)
+                  s('info-wifi', r.wifiConnected ? '✅ Connecté' : '❌ Non connecté');
+                if (r.powerStatus) {
+                  var pm = {'P':'🔌 Secteur','B':'🔋 Batterie','C':'🔋 Chargement'};
+                  s('info-power', pm[r.powerStatus] || r.powerStatus);
+                }
+                if (r.keepAliveDay) s('info-keepalive', r.keepAliveDay + ' j');
+              }
+              H.get('verisure_auth_hash', function(e, v) {
+                var el = document.getElementById('info-hash');
+                if (el) el.textContent = (!e && v) ? v.slice(0,20)+'...' : '--';
+              });
+              safeApi('GET', '/get-alarm-state', function(e, r) {
+                if (!e && r && r.state) setAlarmBadge(r.state); else resetAlarmBadge();
+              });
+              refreshDevicesTable();
+              setTimeout(loadActV2, 1000);
+            });
+          }, 1000);
+        }
+      }
+      _wasConnected = connected;
+
+      // Si connecté : mise à jour des champs dynamiques à chaque cycle (toutes les 3s)
+      if (connected) {
+        // État alarme — depuis le cache poller (toujours à jour après ARM/DARM)
+        safeApi('GET', '/get-alarm-state', function(e, r) {
+          if (!e && r && r.state) setAlarmBadge(r.state);
+        });
+        // Dernier poll
+        H.get('verisure_last_poll_ts', function(e, ts) {
+          if (!e && ts) {
+            var el = document.getElementById('last-poll');
+            if (el) el.textContent = formatRelative(parseInt(ts));
+          }
+        });
+        // Compteur capteurs
+        H.get('verisure_sensor_count', function(e, count) {
+          var el = document.getElementById('sensor-count');
+          if (!e && count != null && el) el.textContent = count + ' capteur(s)';
+        });
+        // Toutes les ~30s : rafraîchir les infos complètes
+        if (_statusPollCount % 10 === 0) refreshInstallationInfo();
+        // Toutes les ~15s : rafraîchir le tableau devices
+        if (_statusPollCount % 5 === 0) refreshDevicesTable();
+      }
+    });
+  }
+
+  // Lancer après un court délai puis toutes les 3s
+  // (délai initial pour laisser Homey.ready() se terminer complètement)
+  setTimeout(function() {
+    _pollStatus();
+    setInterval(_pollStatus, 3000);
+  }, 1000);
+}
+
+// -- Helpers UI -------------------------------------------------------------
+
+// Recharge les champs depuis les settings persistés (rapide, sans appel API)
+function refreshInstallationInfo() {
+  if (!H) return;
+  H.get('verisure_auth_hash', function(err, v) {
+    document.getElementById('info-hash').textContent = (!err && v) ? v.slice(0,20)+'...' : '--';
+  });
+  safeApi('GET', '/get-alarm-state', function(err, r) {
+    if (!err && r && r.state) setAlarmBadge(r.state); else resetAlarmBadge();
+  });
+  H.get('verisure_sensor_count', function(err, count) {
+    document.getElementById('sensor-count').textContent =
+      (!err && count != null) ? count + ' capteur(s)' : '--';
+  });
+  H.get('verisure_last_poll_ts', function(err, ts) {
+    document.getElementById('last-poll').textContent =
+      (!err && ts) ? formatRelative(parseInt(ts)) : '--';
+  });
+  H.get('verisure_numinst', function(err, v) {
+    document.getElementById('info-numinst').textContent = (!err && v) ? v : '--';
+  });
+  H.get('verisure_giid', function(err, v) {
+    document.getElementById('info-giid').textContent = (!err && v) ? v : '--';
+  });
+  H.get('verisure_panel', function(err, v) {
+    document.getElementById('info-panel').textContent = (!err && v) ? v : '--';
+  });
+  H.get('verisure_owner', function(err, v) {
+    document.getElementById('info-owner').textContent = (!err && v) ? v : '--';
+  });
+  H.get('verisure_address', function(err, v) {
+    document.getElementById('info-address').textContent = (!err && v) ? v : '--';
+  });
+  // WiFi / Alimentation / Keep-alive depuis settings persistés
+  H.get('verisure_wifi_connected', function(err, v) {
+    if (!err && v !== null && v !== undefined) {
+      var el = document.getElementById('info-wifi');
+      if (el) el.textContent = (v === true || v === 'true') ? '✅ Connecté' : '❌ Non connecté';
+    }
+  });
+  H.get('verisure_power_status', function(err, v) {
+    if (!err && v) {
+      var el = document.getElementById('info-power');
+      if (el) { var m={'P':'🔌 Secteur','B':'🔋 Batterie','C':'🔋 Chargement'}; el.textContent = m[v]||v; }
+    }
+  });
+  H.get('verisure_keep_alive_day', function(err, v) {
+    var el = document.getElementById('info-keepalive');
+    if (!err && v && el) el.textContent = v + ' j';
+  });
+}
+
+function setConnectedState(connected) {
+  document.getElementById('section-connected').style.display = connected ? 'block' : 'none';
+  document.getElementById('section-login').style.display     = connected ? 'none'  : 'block';
+  var actv2sec = document.getElementById('section-actv2');
+  if (actv2sec) actv2sec.style.display = connected ? 'block' : 'none';
+  if (connected) {
+    setTimeout(refreshDevicesTable, 300);
+    setTimeout(populatePirSelect, 800);
+    document.getElementById('section-capture').style.display = 'block';
+  } else {
+    document.getElementById('section-capture').style.display = 'none';
+  }
+
+  var badge = document.getElementById('session-badge');
+  var label = document.getElementById('session-label');
+  badge.className   = 'badge ' + (connected ? 'badge-green' : 'badge-red');
+  label.textContent = connected ? 'Connecté' : 'Non connecté';
+
+  // Effacer toutes les informations quand déconnecté
+  if (!connected) {
+    ['info-numinst', 'info-giid', 'info-panel', 'info-hash',
+     'info-owner', 'info-address'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = '--';
+    });
+    ['sensor-count', 'last-poll'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = '--';
+    });
+    resetAlarmBadge();
+  }
+}
+
+// Helpers login
+
+function resetAlarmBadge() {
+  var badge = document.getElementById('alarm-badge');
+  var label = document.getElementById('alarm-label');
+  if (badge) badge.className = 'badge badge-amber';
+  if (label) label.textContent = '--';
+}
+
+function setAlarmBadge(statusType) {
+  var badge = document.getElementById('alarm-badge');
+  var label = document.getElementById('alarm-label');
+  var map = {
+    DISARMED:         { cls: 'badge-green', txt: '🔓 Désactivée' },
+    ARMED_AWAY:       { cls: 'badge-red',   txt: '🔒 Mode Total' },
+    ARMED_HOME:       { cls: 'badge-amber', txt: '🔒 Partiel Jour' },
+    ARMED_DAY:        { cls: 'badge-amber', txt: '🔒 Partiel Jour' },
+    ARMED_NIGHT:      { cls: 'badge-amber', txt: '🔒 Partiel Nuit' },
+    ARMED_VACATION:   { cls: 'badge-red',   txt: '🔒 Vacances' },
+    ALARM_TRIGGERED:  { cls: 'badge-red',   txt: '🚨 En alerte !' },
+    ALARM:            { cls: 'badge-red',   txt: '🚨 En alerte !' },
+  };
+  var info = map[statusType] || { cls: 'badge-amber', txt: statusType || '--' };
+  badge.className = 'badge ' + info.cls;
+  label.textContent = info.txt;
+}
+
+function flashSave() {
+  var el = document.getElementById('save-feedback');
+  el.classList.add('visible');
+  setTimeout(function() { el.classList.remove('visible'); }, 2000);
+}
+
+function formatRelative(ts) {
+  var diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 60)    return 'À l\'instant';
+  if (diff < 3600)  return 'Il y a ' + Math.floor(diff / 60) + ' min';
+  if (diff < 86400) return 'Il y a ' + Math.floor(diff / 3600) + ' h';
+  return new Date(ts).toLocaleDateString('fr-FR');
+}
+
+function showConfirm() {
+  document.getElementById('confirm-backdrop').classList.add('visible');
+}
+
+function hideConfirm() {
+  document.getElementById('confirm-backdrop').classList.remove('visible');
+}
+</script>
+
+
+
+
+
+
+
+  <div class="page-header">
+    <div class="page-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5L12 1zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>
+    </div>
+    <div>
+      <div class="page-title">Verisure</div>
+      <div class="page-sub">Réglages de l'app</div>
+    </div>
+  </div>
+
+  <div class="section" id="section-connected" style="display:none">
+    <div class="section-head">
+      <div class="section-icon icon-gray">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z"/></svg>
+      </div>
+      <span class="section-title">Compte</span>
+    </div>
+    <div class="section-body">
+      <div class="row">
+        <div><div class="row-label">Adresse email</div></div>
+        <span class="row-value" id="account-email">--</span>
+      </div>
+      <div class="row">
+        <div>
+          <div class="row-label">Notifications de poll</div>
+          <div class="row-hint">Active un log dans le journal à chaque poll (mode test/debug).</div>
+        </div>
+        <div class="row-value">
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-poll-log" onchange="savePollLog(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Section Compte -->
+  <div class="section">
+    <div class="section-header"><span class="section-icon">👤</span><span class="section-title">Compte</span></div>
+    <div class="card">
+      <div class="row">
+        <div>
+          <div class="row-label">Déconnecter le compte</div>
+          <div class="row-hint">Supprime la session et arrête le polling.</div>
+        </div>
+        <button class="btn btn-danger" onclick="showConfirm()">Déconnecter</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- Statut -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon icon-red">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+      </div>
+      <span class="section-title">Statut de la connexion</span>
+    </div>
+    <div class="section-body">
+      <div class="row">
+        <div><div class="row-label">Session Verisure</div></div>
+        <span class="badge badge-green" id="session-badge">
+          <span class="badge-dot"></span>
+          <span id="session-label">Connecté</span>
+        </span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Capteurs couplés</div></div>
+        <span class="row-value" id="sensor-count">--</span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Dernier poll</div></div>
+        <span class="row-value" id="last-poll">--</span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">État alarme</div></div>
+        <span class="badge badge-amber" id="alarm-badge">
+          <span class="badge-dot"></span>
+          <span id="alarm-label">--</span>
+        </span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Titulaire</div></div>
+        <span class="row-value" id="info-owner">--</span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Adresse</div></div>
+        <span class="row-value" id="info-address" style="font-size:12px;">--</span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">N° installation</div></div>
+        <span class="row-value" id="info-numinst">--</span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Installation (giid)</div></div>
+        <span class="row-value" id="info-giid" style="font-size:11px;font-family:monospace;">--</span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Panel</div></div>
+        <span class="row-value" id="info-panel">--</span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">WiFi centrale</div></div>
+        <span class="row-value" id="info-wifi">--</span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Alimentation</div></div>
+        <span class="row-value" id="info-power">--</span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Keep-alive (j)</div></div>
+        <span class="row-value" id="info-keepalive">--</span>
+      </div>
+      <div class="row">
+        <div><div class="row-label">JWT hash (20 car.)</div></div>
+        <span class="row-value" id="info-hash" style="font-size:11px;font-family:monospace;">--</span>
+      </div>
+      <div style="padding:0.75rem 1.1rem;">
+        <!-- Boutons debug cachés — accessibles via console si besoin -->
+        <div style="display:none;">
+          <button onclick="doInitGiid()">Résoudre installation</button>
+          <button onclick="doTestAlarm()">Tester état alarme</button>
+          <button onclick="doTestStatus()">Tester xSStatus</button>
+          <button onclick="doTestCapabilities()">Tester x-capabilities</button>
+          <button onclick="testEntry()">Tester xSEntry</button>
+          <button onclick="testActV2()" style="background:#e67e22;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;margin-top:4px;">🔍 Tester ACT_V2</button>
+          <div style="margin-top:6px;display:flex;gap:4px;align-items:center;">
+            <input id="camera-code-input" type="number" min="1" max="99" placeholder="Code XR (ex: 9)"
+              style="width:120px;font-size:11px;padding:2px 6px;border:1px solid var(--border);border-radius:4px;">
+            <button onclick="requestImageFromCamera()" style="background:#2980b9;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;">📷 Demander image</button>
+          </div>
+          <button onclick="testExtra('cameras')"   style="font-size:11px;margin-top:2px;">📷 Caméras</button>
+          <button onclick="testRequestImage()" style="background:#27ae60;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;margin-top:2px;">📸 Demande image PIR</button>
+          <button onclick="testExtra('keys')"       style="font-size:11px;margin-top:2px;">🔑 Clés/badges</button>
+          <button onclick="testExtra('scheduler')"  style="font-size:11px;margin-top:2px;">⏰ Scheduler</button>
+          <button onclick="testExtra('incidences')" style="font-size:11px;margin-top:2px;">🚨 Incidents</button>
+          <button onclick="testExtra('services')"   style="font-size:11px;margin-top:2px;">⚙️ Services</button>
+          <button onclick="testRequestImage()" style="font-size:11px;margin-top:2px;background:#8e44ad;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;">📷 Demander image PIR</button>
+          <textarea id="capab-input"></textarea>
+          <button onclick="saveCapabilities()">Enregistrer x-capabilities</button>
+        </div>
+        <!-- Bouton Devices visible -->
+        <button class="btn" onclick="doTestDevices()" style="height:34px;font-size:12px;width:100%;background:var(--purple,#6c35a5);color:#fff;">
+          🔍 Afficher les devices
+        </button>
+        <div id="test-alarm-result" style="display:none;font-size:11px;margin-top:8px;color:var(--ink-2);background:var(--surface);padding:8px;border-radius:6px;border:1px solid var(--border);line-height:1.6;"></div>
+        <div id="init-giid-result" style="display:none;font-size:11px;margin-top:8px;color:var(--ink-2);background:var(--surface);padding:8px;border-radius:6px;border:1px solid var(--border);line-height:1.6;"></div>
+      </div>
+
+      <!-- Tableau des capteurs couplés — toujours visible quand connecté -->
+      <div style="padding:0 1.1rem 0.9rem;">
+        <div style="font-size:10px;font-weight:600;color:var(--ink-3);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:5px;">Devices couplés</div>
+        <div style="overflow-x:auto;">
+          <table id="devices-table" style="width:100%;border-collapse:collapse;font-size:10px;color:var(--ink-2);">
+            <thead>
+              <tr style="background:var(--surface-2,#f2f2f2);">
+                <th style="padding:3px 6px;text-align:left;font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap;">Code</th>
+                <th style="padding:3px 6px;text-align:left;font-weight:600;border-bottom:1px solid var(--border);">Nom</th>
+                <th style="padding:3px 6px;text-align:left;font-weight:600;border-bottom:1px solid var(--border);">Type</th>
+                <th style="padding:3px 6px;text-align:center;font-weight:600;border-bottom:1px solid var(--border);">État</th>
+                <th style="padding:3px 6px;text-align:right;font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap;">Cpt.</th>
+              </tr>
+            </thead>
+            <tbody id="devices-table-body">
+              <tr><td colspan="5" style="padding:5px 6px;color:var(--ink-4);font-style:italic;">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:9px;color:var(--ink-4);margin-top:3px;text-align:right;" id="devices-table-ts"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Polling -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon icon-gray">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm.5 5v6.25l5.5 3.27-.75 1.23L11 14V7h1.5z"/></svg>
+      </div>
+      <span class="section-title">Intervalle de mise à jour</span>
+    </div>
+    <div class="section-body">
+      <div class="row">
+        <div>
+          <div class="row-label">Fréquence de polling</div>
+          <div class="row-hint">30 min minimum. Valeur inférieure risque un blacklistage IP par Verisure (recommandation : 30 min).</div>
+        </div>
+        <div class="interval-wrap">
+          <input class="interval-input" type="number" id="poll-interval" min="30" max="120" value="30" />
+          <span class="interval-unit">min</span>
+        </div>
+      </div>
+      <div class="row" style="justify-content: flex-end; gap: 10px; padding-top: 0.6rem; padding-bottom: 0.8rem;">
+        <span class="save-feedback" id="save-feedback">Enregistré ✓</span>
+        <button class="btn btn-primary" onclick="saveInterval()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compte : état connecté -->
+  <!-- Section Capture image PIR -->
+  <div class="section" id="section-capture" style="display:none;">
+    <div class="section-head">
+      <div class="section-icon icon-gray">
+        <svg viewBox="0 0 24 24"><path d="M9 3L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.17L15 3H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </div>
+      <span class="section-title">Demande d'image PIR</span>
+    </div>
+    <div class="section-body">
+      <div class="row" style="gap:8px;flex-wrap:wrap;">
+        <select id="capture-device" style="flex:1;min-width:120px;height:34px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--ink-1);padding:0 8px;font-size:12px;">
+          <option value="">— Choisir un device PIR —</option>
+        </select>
+        <button class="btn btn-primary" onclick="doCaptureImage()" style="height:34px;font-size:12px;padding:0 16px;">
+          📷 Capturer
+        </button>
+      </div>
+      <div id="capture-status" style="display:none;font-size:11px;margin-top:8px;color:var(--ink-3);font-style:italic;"></div>
+      <div id="capture-image-wrap" style="display:none;margin-top:10px;text-align:center;">
+        <img id="capture-image" src="" alt="Image capturée" style="max-width:100%;border-radius:8px;border:1px solid var(--border);"/>
+        <div id="capture-image-ts" style="font-size:9px;color:var(--ink-4);margin-top:4px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compte : non connecté → utiliser le pairing -->
+
+  <!-- Section Logs -->
+  <div class="section" id="section-logs">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <span class="section-title">Journal de l'application</span>
+    </div>
+    <div class="card">
+      <div id="log-window" class="log-window">Chargement des logs...</div>
+      <div style="display:flex;gap:4px;align-items:center;margin-bottom:4px;">
+        <button class="btn-sm" onclick="refreshLogs()" title="Actualiser">🔄</button>
+        <button class="btn-sm" onclick="copyLogs(this)" title="Copier">📋</button>
+        <button class="btn-sm" onclick="clearLogDisplay()" title="Effacer">🗑</button>
+        <label style="font-size:11px;color:var(--ink-3);display:flex;align-items:center;gap:4px;cursor:pointer;">
+          <input type="checkbox" id="toggle-autoscroll" checked style="margin:0;"> ↓
+        </label>
+        <span class="log-status" id="log-last-update" style="margin-left:auto;"></span>
+      </div>
+      <div>
+        <!-- Bouton ACT_V2 caché — rechargement automatique -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Section Journal ACT_V2 -->
+  <div class="section" id="section-actv2" style="display:none;">
+    <div class="section-header" style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <span class="section-icon">📅</span>
+        <span class="section-title">Journal d'activité Verisure</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="actv2-ts" style="font-size:10px;color:var(--ink-4);"></span>
+        <button class="btn-sm" onclick="loadActV2()" id="actv2-refresh-btn">🔄</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="actv2-table">
+        <thead>
+          <tr>
+            <th style="width:130px;">Date / Heure</th>
+            <th>Événement</th>
+            <th style="width:100px;">Utilisateur</th>
+            <th style="width:70px;">Interface</th>
+          </tr>
+        </thead>
+        <tbody id="actv2-body">
+          <tr><td colspan="4" style="color:var(--ink-4);font-style:italic;padding:10px 8px;">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>
