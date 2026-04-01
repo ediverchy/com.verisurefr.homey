@@ -23,5 +23,13 @@
     "security",
     "france"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ediverchy/com.verisurefr.git"
+  },
+  "homepage": "https://github.com/ediverchy/com.verisurefr",
+  "bugs": {
+    "url": "https://github.com/ediverchy/com.verisurefr/issues"
+  }
 }
