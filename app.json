@@ -1,0 +1,545 @@
+{
+  "id": "com.verisure.homey",
+  "version": "1.0.0",
+  "compatibility": ">=12.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "brandColor": "#E4022D",
+  "name": {
+    "en": "Homey Pro Verisure France",
+    "fr": "Homey Pro Verisure France"
+  },
+  "description": {
+    "en": "Integrate your Verisure France alarm system with Homey",
+    "fr": "Intégrez votre alarme Verisure France avec Homey"
+  },
+  "category": [
+    "security"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Etienne DIVERCHY",
+    "email": "diverchy@hotmail.com"
+  },
+  "flow": {
+    "triggers": [
+      {
+        "id": "alarm_triggered",
+        "title": {
+          "en": "Alarm was triggered",
+          "fr": "L'alarme a été déclenchée"
+        },
+        "hint": {
+          "en": "Triggered when the Verisure alarm goes off.",
+          "fr": "Déclenché quand l'alarme Verisure se déclenche."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=alarm-panel"
+          }
+        ]
+      },
+      {
+        "id": "image_captured",
+        "title": {
+          "en": "An image was captured",
+          "fr": "Une image a été capturée"
+        },
+        "hint": {
+          "en": "Triggered when the camera captures a new photo (on motion or manual action).",
+          "fr": "Déclenché quand la caméra prend une photo (mouvement ou action manuelle)."
+        },
+        "tokens": [
+          {
+            "name": "area",
+            "type": "string",
+            "title": {
+              "en": "Area",
+              "fr": "Zone"
+            },
+            "example": {
+              "en": "Hallway",
+              "fr": "Couloir"
+            }
+          },
+          {
+            "name": "device",
+            "type": "string",
+            "title": {
+              "en": "Device name",
+              "fr": "Capteur"
+            },
+            "example": {
+              "en": "Hallway",
+              "fr": "Couloir"
+            }
+          },
+          {
+            "name": "capture_time",
+            "type": "string",
+            "title": {
+              "en": "Capture time",
+              "fr": "Heure prise"
+            },
+            "example": {
+              "en": "2025-01-01T12:00:00Z",
+              "fr": "2025-01-01T12:00:00Z"
+            }
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pir-camera"
+          }
+        ]
+      },
+      {
+        "id": "alarm_state_changed",
+        "title": {
+          "en": "Alarm state changed",
+          "fr": "L'état de l'alarme a changé"
+        },
+        "hint": {
+          "en": "Triggered when the alarm state changes.",
+          "fr": "Déclenché quand l'état de l'alarme change."
+        },
+        "tokens": [
+          {
+            "name": "state",
+            "type": "string",
+            "title": {
+              "en": "New state",
+              "fr": "Nouvel état"
+            }
+          },
+          {
+            "name": "previous_state",
+            "type": "string",
+            "title": {
+              "en": "Previous state",
+              "fr": "État précédent"
+            }
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=alarm-panel"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "is_alarm_armed",
+        "title": {
+          "en": "Alarm is !{{armed|disarmed}}",
+          "fr": "L'alarme est !{{armée|désarmée}}"
+        },
+        "hint": {
+          "en": "Checks whether the Verisure alarm is currently armed (away or home).",
+          "fr": "Vérifie si l'alarme Verisure est actuellement armée (totale ou partielle)."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=alarm-panel"
+          }
+        ]
+      },
+      {
+        "id": "alarm_state_is",
+        "title": {
+          "en": "Alarm state is !{{|not}} {{state}}",
+          "fr": "L'état de l'alarme est !{{|différent de}} {{state}}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=alarm-panel"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "title": {
+              "en": "State",
+              "fr": "État"
+            },
+            "values": [
+              {
+                "id": "disarmed",
+                "label": {
+                  "en": "Disarmed",
+                  "fr": "Désactivée"
+                }
+              },
+              {
+                "id": "armed_day",
+                "label": {
+                  "en": "Partial Day",
+                  "fr": "Partiel Jour"
+                }
+              },
+              {
+                "id": "armed_night",
+                "label": {
+                  "en": "Partial Night",
+                  "fr": "Partiel Nuit"
+                }
+              },
+              {
+                "id": "armed_away",
+                "label": {
+                  "en": "Total",
+                  "fr": "Mode Total"
+                }
+              }
+            ]
+          }
+        ],
+        "titleFormatted": {
+          "en": "The alarm state is [[state]]",
+          "fr": "L'état de l'alarme est [[state]]"
+        }
+      }
+    ],
+    "actions": [
+      {
+        "id": "refresh_now",
+        "title": {
+          "en": "Refresh Verisure sensors now",
+          "fr": "Rafraîchir les capteurs Verisure maintenant"
+        },
+        "hint": {
+          "en": "Forces an immediate poll of the Verisure cloud API instead of waiting for the next scheduled interval.",
+          "fr": "Force une actualisation immédiate de l'API Verisure sans attendre l'intervalle planifié."
+        }
+      },
+      {
+        "id": "capture_image",
+        "title": {
+          "en": "Take a photo now",
+          "fr": "Prendre une photo maintenant"
+        },
+        "hint": {
+          "en": "Triggers an immediate image capture on the selected PIR camera.",
+          "fr": "Déclenche une capture photo immédiate sur le détecteur PIR sélectionné."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pir-camera"
+          }
+        ]
+      },
+      {
+        "id": "set_alarm_state",
+        "title": {
+          "en": "Set alarm state to {{state}}",
+          "fr": "Mettre l'alarme en mode {{state}}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=alarm-panel"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "title": {
+              "en": "State",
+              "fr": "État"
+            },
+            "values": [
+              {
+                "id": "disarmed",
+                "label": {
+                  "en": "Disarmed",
+                  "fr": "Désactivée"
+                }
+              },
+              {
+                "id": "armed_day",
+                "label": {
+                  "en": "Partial Day",
+                  "fr": "Partiel Jour"
+                }
+              },
+              {
+                "id": "armed_night",
+                "label": {
+                  "en": "Partial Night",
+                  "fr": "Partiel Nuit"
+                }
+              },
+              {
+                "id": "armed_away",
+                "label": {
+                  "en": "Total",
+                  "fr": "Mode Total"
+                }
+              }
+            ]
+          }
+        ],
+        "titleFormatted": {
+          "en": "Set alarm to [[state]]",
+          "fr": "Mettre l'alarme en [[state]]"
+        }
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "id": "alarm-panel",
+      "name": {
+        "en": "Alarm panel",
+        "fr": "Centrale d'alarme"
+      },
+      "class": "other",
+      "capabilities": [
+        "verisure_alarm_state",
+        "alarm_generic"
+      ],
+      "capabilitiesOptions": {
+        "alarm_generic": {
+          "title": {
+            "en": "Alarm triggered",
+            "fr": "Alarme déclenchée"
+          }
+        },
+        "verisure_alarm_state": {
+          "title": {
+            "en": "Alarm state",
+            "fr": "État alarme"
+          },
+          "preventInsights": false
+        }
+      },
+      "images": {
+        "small": "/drivers/alarm-panel/assets/images/small.png",
+        "large": "/drivers/alarm-panel/assets/images/large.png",
+        "xlarge": "/drivers/alarm-panel/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "settings": [
+        {
+          "id": "giid",
+          "type": "label",
+          "label": {
+            "en": "Installation ID (giid)",
+            "fr": "ID installation (giid)"
+          },
+          "value": ""
+        },
+        {
+          "id": "alarm_pin",
+          "type": "text",
+          "label": {
+            "en": "Verisure PIN code",
+            "fr": "Code PIN Verisure"
+          },
+          "hint": {
+            "en": "Optional — leave empty if your alarm does not require a PIN code",
+            "fr": "Optionnel — laisser vide si votre alarme ne demande pas de code PIN (armement par badge ou télécommande)"
+          },
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "api": {
+    "sessionLogin": {
+      "method": "POST",
+      "path": "/session/login"
+    },
+    "sessionRequestOtp": {
+      "method": "POST",
+      "path": "/session/request-otp"
+    },
+    "sessionMfa": {
+      "method": "POST",
+      "path": "/session/mfa"
+    },
+    "sessionClear": {
+      "method": "POST",
+      "path": "/session/clear"
+    },
+    "sessionDebug": {
+      "method": "POST",
+      "path": "/session/debug"
+    },
+    "getLogs": {
+      "method": "GET",
+      "path": "/logs"
+    },
+    "testJwt": {
+      "method": "POST",
+      "path": "/test-jwt"
+    },
+    "sendOtp": {
+      "method": "POST",
+      "path": "/send-otp"
+    },
+    "verifyOtp": {
+      "method": "POST",
+      "path": "/verify-otp"
+    },
+    "initGiid": {
+      "method": "GET",
+      "path": "/init-giid"
+    },
+    "testAlarm": {
+      "method": "GET",
+      "path": "/test-alarm"
+    },
+    "testStatus": {
+      "method": "GET",
+      "path": "/test-status"
+    },
+    "testCapabilities": {
+      "method": "GET",
+      "path": "/test-capabilities"
+    },
+    "testDevices": {
+      "method": "GET",
+      "path": "/test-devices"
+    },
+    "testEntry": {
+      "method": "GET",
+      "path": "/test-entry"
+    },
+    "testActV2": {
+      "method": "GET",
+      "path": "/test-act-v2"
+    },
+    "testCameras": {
+      "method": "GET",
+      "path": "/test-cameras"
+    },
+    "testKeys": {
+      "method": "GET",
+      "path": "/test-keys"
+    },
+    "testScheduler": {
+      "method": "GET",
+      "path": "/test-scheduler"
+    },
+    "testIncidences": {
+      "method": "GET",
+      "path": "/test-incidences"
+    },
+    "testServices": {
+      "method": "GET",
+      "path": "/test-services"
+    },
+    "requestImage": {
+      "method": "POST",
+      "path": "/request-image"
+    },
+    "captureImage": {
+      "method": "POST",
+      "path": "/capture-image"
+    },
+    "getAlarmState": {
+      "method": "GET",
+      "path": "/get-alarm-state"
+    }
+  },
+  "bugs": {
+    "url": "https://github.com/ediverchy/com.verisure.homey/issues"
+  },
+  "source": "https://github.com/ediverchy/com.verisure.homey",
+  "homepage": "https://github.com/ediverchy/com.verisure.homey",
+  "settings": [
+    {
+      "id": "poll_interval_min",
+      "type": "label",
+      "title": {
+        "en": "Polling interval (minutes)",
+        "fr": "Intervalle de mise à jour (minutes)"
+      },
+      "hint": {
+        "en": "How often to query the Verisure cloud. Minimum 5 minutes recommended to avoid rate limiting.",
+        "fr": "Fréquence d'interrogation du cloud Verisure. 5 minutes minimum recommandé pour éviter le blocage."
+      },
+      "value": "10",
+      "min": "5",
+      "max": "60",
+      "units": {
+        "en": "min",
+        "fr": "min"
+      }
+    }
+  ],
+  "capabilities": {
+    "verisure_alarm_state": {
+      "type": "enum",
+      "title": {
+        "en": "Alarm state",
+        "fr": "État alarme"
+      },
+      "values": [
+        {
+          "id": "armed_day",
+          "title": {
+            "en": "Partial Day",
+            "fr": "Partiel Jour"
+          }
+        },
+        {
+          "id": "armed_night",
+          "title": {
+            "en": "Partial Night",
+            "fr": "Partiel Nuit"
+          }
+        },
+        {
+          "id": "armed_away",
+          "title": {
+            "en": "Total",
+            "fr": "Mode Total"
+          }
+        },
+        {
+          "id": "disarmed",
+          "title": {
+            "en": "Disarmed",
+            "fr": "Désactivée"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "insights": true
+    }
+  }
+}

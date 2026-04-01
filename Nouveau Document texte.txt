@@ -1,0 +1,13 @@
+com.verisure.homey/
+│com.verisure.homey/
+├── app.js / app.json / api.js / package.json
+├── lib/
+│   ├── VerisureClient.js
+│   └── VerisurePoller.js
+├── drivers/alarm-panel/
+│   ├── driver.js
+│   ├── device.js
+│   └── assets/images/
+├── settings/index.html
+├── assets/images/
+└── test/verisure-test.js
