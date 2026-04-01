@@ -24,5 +24,5 @@ Have a look to the Documentation folder where you will find the user manual and 
 ### À propos des versions
 
 - Ce dépôt suit le versionnage sémantique avec des tags Git.
-- Mettre à jour le fichier `app.json` pour refléter l’URL source correcte : `https://github.com/ediverchy/com.verisurefr`.
+- Mettre à jour le fichier `app.json` pour refléter l’URL source correcte : `https://github.com/ediverchy/com.verisurefr.homey`.
 
