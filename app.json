@@ -373,8 +373,7 @@
           },
           "value": ""
         }
-      ],
-      "icon": "/drivers/alarm-panel/assets/icon.svg"
+      ]
     }
   ],
   "api": {
@@ -542,6 +541,5 @@
       "setable": true,
       "insights": true
     }
-  },
-  "icon": "/assets/icon.svg"
+  }
 }
