@@ -396,6 +396,81 @@
           },
           "value": ""
         }
+      ],
+      "connectivity": [
+        "cloud"
+      ]
+    },
+    {
+      "id": "contact-sensor",
+      "name": {
+        "en": "Contact Sensor",
+        "fr": "Capteur Contact"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "alarm_contact",
+        "alarm_generic"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/contact-sensor/assets/images/small.png",
+        "large": "/drivers/contact-sensor/assets/images/large.png",
+        "xlarge": "/drivers/contact-sensor/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ]
+    },
+    {
+      "id": "pir-camera",
+      "name": {
+        "en": "PIR Camera",
+        "fr": "Détecteur PIR avec caméra"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "alarm_motion",
+        "alarm_generic"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/pir-camera/assets/images/small.png",
+        "large": "/drivers/pir-camera/assets/images/large.png",
+        "xlarge": "/drivers/pir-camera/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
       ]
     }
   ],

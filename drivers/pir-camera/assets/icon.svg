@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="960" height="960">
+  <!-- Boîtier caméra -->
+  <rect x="120" y="280" width="560" height="400" rx="60"
+        fill="none" stroke="#333333" stroke-width="52"/>
+  <!-- Objectif -->
+  <circle cx="400" cy="480" r="140"
+          fill="none" stroke="#333333" stroke-width="52"/>
+  <circle cx="400" cy="480" r="60" fill="#333333"/>
+  <!-- Lentille reflet -->
+  <circle cx="360" cy="445" r="28" fill="#FFFFFF" opacity="0.5"/>
+  <!-- Corps droit caméra -->
+  <rect x="680" y="360" width="160" height="240" rx="30"
+        fill="none" stroke="#333333" stroke-width="48"/>
+  <!-- Voyant PIR -->
+  <circle cx="760" cy="240" r="60" fill="#333333"/>
+  <circle cx="760" cy="240" r="36" fill="#FF4400" opacity="0.8"/>
+</svg>

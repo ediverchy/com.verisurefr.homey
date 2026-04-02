@@ -388,6 +388,32 @@ module.exports = {
     }
   },
 
+  // Endpoint get-alarm-state — retourne l'état actuel depuis le cache du poller (rapide, sans appel API)
+  async getAlarmState({ homey }) {
+    const app = requireApp(homey);
+
+    // Priorité 1 : cache mémoire du poller (mis à jour à chaque poll et après ARM/DARM)
+    const pollerState = app.poller?.getStatus?.()?.lastArmState;
+
+    // Priorité 2 : setting persisté (écrit après chaque poll et ARM/DARM)
+    const settingState = homey.settings.get('verisure_last_arm_state');
+
+    // Priorité 3 : capability du device couplé (toujours à jour, disponible dès le démarrage)
+    // C'est la source la plus fiable entre le démarrage et le premier poll (30 min)
+    const reverseMap = {
+      'disarmed':    'DISARMED',
+      'armed_away':  'ARMED_AWAY',
+      'armed_day':   'ARMED_DAY',
+      'armed_night': 'ARMED_NIGHT',
+    };
+    const device = homey.drivers.getDriver('alarm-panel')?.getDevices?.()[0];
+    const capValue = device?.getCapabilityValue?.('verisure_alarm_state');
+    const deviceState = capValue ? (reverseMap[capValue] || null) : null;
+
+    const state = pollerState || settingState || deviceState || null;
+    return { ok: true, state };
+  },
+
   // Endpoint test-alarm — teste getArmState directement
   async testAlarm({ homey }) {
     return await requireApp(homey).testAlarm();
