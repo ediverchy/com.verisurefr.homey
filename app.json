@@ -322,7 +322,37 @@
             "en": "Alarm state",
             "fr": "État alarme"
           },
-          "preventInsights": false
+          "preventInsights": false,
+          "values": [
+            {
+              "id": "armed_day",
+              "title": {
+                "en": "Partial Day",
+                "fr": "Partiel Jour"
+              }
+            },
+            {
+              "id": "armed_night",
+              "title": {
+                "en": "Partial Night",
+                "fr": "Partiel Nuit"
+              }
+            },
+            {
+              "id": "armed_away",
+              "title": {
+                "en": "Total",
+                "fr": "Mode Total"
+              }
+            },
+            {
+              "id": "disarmed",
+              "title": {
+                "en": "Disarmed",
+                "fr": "Désactivée"
+              }
+            }
+          ]
         }
       },
       "images": {

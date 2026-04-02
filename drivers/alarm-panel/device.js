@@ -26,10 +26,6 @@ class AlarmPanelDevice extends Device {
     this.log('[AlarmPanel] Init');
     this._initInProgress = false;
 
-    // Marquer indisponible pendant l'init — force l'app mobile à recharger
-    // le device complet (capabilities + values) une fois setAvailable() appelé
-    // C'est ce qui se passe lors du cycle flows → retour dans l'app mobile
-    await this.setUnavailable('Initialisation...').catch(e => this.error(e));
 
     // Supprimer homealarm_state si Homey l'a injecté automatiquement
     // (inévitable avec certaines versions du SDK même avec class: "other")
