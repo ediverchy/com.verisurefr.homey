@@ -1,5 +1,8 @@
 {
   "1.1.0": {
     "en": "First Publication."
+  },
+  "1.2.0": {
+    "en": "Update app.json - avoid drivers for sensprs to be proposed as pairing devices"
   }
 }
